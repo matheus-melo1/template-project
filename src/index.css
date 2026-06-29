@@ -118,14 +118,9 @@
 }
 
 #root {
-  width: 1126px;
   max-width: 100%;
   margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
   min-height: 100svh;
-  display: flex;
-  flex-direction: column;
   box-sizing: border-box;
 }
 
@@ -261,3 +256,25 @@ code {
     @apply bg-background text-foreground;}
   html {
     @apply font-sans;}}
+
+.tree-container [role="tree"] {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(0.5 0 0 / 0.3) transparent;
+}
+
+.tree-container [role="tree"]::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tree-container [role="tree"]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tree-container [role="tree"]::-webkit-scrollbar-thumb {
+  background-color: oklch(0.5 0 0 / 0.3);
+  border-radius: 3px;
+}
+
+.tree-container [role="tree"]::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(0.5 0 0 / 0.5);
+}

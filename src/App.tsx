@@ -1,121 +1,93 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import Silk from "./components/Silk";
+import { AnimatePresence, motion, type HTMLMotionProps } from "motion/react";
+import Steps from "./steps/Steps";
+import { FormProvider } from "react-hook-form";
+import { Button } from "./components/ui/button";
+import { cn } from "./lib/utils";
+import { useWizard } from "./hooks/useWizard";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const {
+    step,
+    stepTitle,
+    isOptionalStep,
+    isLastStep,
+    isStepComplete,
+    incrementStep,
+    decrementStep,
+    formHook,
+  } = useWizard();
+  console.log(formHook.watch());
+
+  const htmlMotionProps: HTMLMotionProps<"h2" | "div"> = {
+    initial: { opacity: 0, y: "-12px" },
+    animate: { opacity: 1, y: "0px" },
+    exit: { opacity: 0, y: "12px" },
+    transition: { duration: 0.3, ease: "easeInOut" },
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <main className="relative w-full h-screen p-4 flex items-center justify-center overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <Silk
+          speed={5}
+          scale={1}
+          color="#7B7481"
+          noiseIntensity={1.5}
+          rotation={0}
+        />
+      </div>
+      <motion.div
+        className={cn(
+          step > 3 ? "w-full h-full" : "w-96 h-[20rem]",
+          "relative z-10 p-4 rounded-xl transition-all duration-500 border flex flex-col items-center bg-background/70 backdrop-blur-sm justify-between",
+        )}
+      >
+        {step !== 1 && (
+          <motion.h2
+            {...htmlMotionProps}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="flex flex-col items-center gap-1"
+          >
+            {stepTitle}
+            {isOptionalStep && (
+              <span className="text-xs font-normal text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                optional
+              </span>
+            )}
+          </motion.h2>
+        )}
 
-      <div className="ticks"></div>
+        <FormProvider {...formHook}>
+          <Steps step={step} incrementStep={incrementStep} />
+        </FormProvider>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        <AnimatePresence mode="wait">
+          {step !== 1 && (
+            <motion.div
+              {...htmlMotionProps}
+              className="w-full flex justify-between"
+            >
+              <Button
+                onClick={decrementStep}
+                className="font-normal!"
+                variant="outline"
+              >
+                Back
+              </Button>
+              <Button
+                className="font-normal!"
+                onClick={incrementStep}
+                disabled={!isStepComplete()}
+              >
+                {isLastStep ? "Generate" : "Next"}
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    </main>
+  );
 }
 
-export default App
+export default App;
